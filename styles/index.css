@@ -1,0 +1,45 @@
+*{
+    box-sizing: border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+body{
+    
+    background-color: rgba(101, 235, 125, 0.397); 
+    background-image: linear-gradient(to bottom right, rgba(250, 250, 250, 0), rgba(108, 176, 235, 0.342),rgba(43, 233, 224, 0.651));
+}
+#container{
+   margin-right: 10%;
+   margin-left: 10%;
+   margin-bottom: 5%;
+
+}
+#info{
+    margin: 15px;
+    border: 2px solid #000000cb;
+    border-radius: 1rem;
+    background-color: rgba(230, 214, 222, 0.184);
+}
+#data{
+    margin: 15px;
+    border: 2px solid #000000cb;
+    border-radius: 1rem;
+    background-color: rgba(230, 214, 222, 0.184);
+}
+#charts{
+    margin: 15px;
+    border: 2px solid #000000cb;
+    border-radius: 1rem;
+    background-color: rgba(230, 214, 222, 0.184);
+}
+.textbox1{
+    
+    display: flex;
+    padding: 2px;
+    border-radius: 1rem;
+    align-items: center;
+    margin-right: 5%;
+    margin-left: 5%;
+}
