@@ -1,35 +1,47 @@
 <html>
     <head>
-        <title>EDI- PROJEKT 2</title>
+        <title>EDI final project</title>
         <meta charset="UTF-8">
         <link rel="stylesheet" href="styles/index.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400&amp;display=swap" rel="stylesheet">
     </head>
     <body>
         <div id="container">
             <section id="info">
                 <!-- title,members -->
-                <div>   
-                    <div class = "textbox1">
-                        <p>project title</p>
-                    </div>
-                    <div class = "textbox1">    
-                        <p>Project team members: Jakub Wilk, Kacper Satora, Marta Styczeń</p>
-                    </div>
-                </div>
+                <h1>Project Title</h1>
+                <p>    
+                    Project team members:
+                    <ul>
+                        <li>Jakub Wilk</li>
+                        <li>Kacper Satora</li>
+                        <li>Marta Styczeń</li>
+                    </ul>
+                </p>
             </section>
-            <section id = "data">
+            <section id="data">
                 <!-- display data -->
-                <div class = "textbox1">
-                    <p>Bootstrap data</p>
+                <h1>Data showcase</h1>
+                <div id="data-container">
+                    <!-- Data will be inserted here -->
                 </div>
             </section>
             <section id="charts">
                 <!-- at least 2 charts -->
-                <div class ="textbox1">
-                    <p>Charts</p>
+                <h1>Charts</h1>
+                <div id="chart-container">
+                    <div class="chart">
+
+                    </div>
+                    <div class="chart">
+
+                    </div>
                 </div>
             </section>
-
         </div>
+        <div id="cursor"></div>
+        <script src="js/script.js"></script>
     </body>
 </html>
