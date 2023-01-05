@@ -2,12 +2,17 @@
     cursor: none;
 }
 
+:root {
+    --dark-blue: #060911;
+    --off-white: #f5f6fa;
+}
+
 html {
-    scroll-behavior:smooth;
+    scroll-behavior: smooth;
 }
 
 body {
-    background-color: #060911;
+    background-color: var(--dark-blue);
 }
 
 #container {
@@ -18,7 +23,7 @@ body {
 
 section {
     border-radius: 0.5rem;
-    background-color: #f5f6fa;
+    background-color: var(--off-white);
     font-family: "Ubuntu", sans-serif;
     font-size: 1.5rem;
     display: flex;
@@ -56,6 +61,36 @@ ul {
     pointer-events: none;
 }
 
-.nationality {
+#data-container {
+    width: 95%;
+    max-height: 30rem;
+    overflow-y: scroll;
+}
+
+#data-container *::first-letter {
+    text-transform: capitalize;
+}
+
+.data-point, .website-visits, .website-visit {
+    border: 1px solid var(--dark-blue);
+}
+
+.data-point {
+    display: flex;
+}
+
+.identity-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-evenly;
+}
+
+.nationality-flag {
     font-family: "Noto Color Emoji";
+}
+
+.website-visits {
+    max-height: 10rem;
+    overflow-y: scroll;
 }
