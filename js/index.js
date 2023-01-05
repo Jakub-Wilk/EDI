@@ -66,7 +66,7 @@ const create_data_showcase = data => {
 
 const fetch_data = () => {
     // fetch('https://my.api.mockaroo.com/website_entries.json?key=7d9d28a0')
-    fetch('/website_entries.json')
+    fetch('website_entries.json')
         .then(response => {
             return response.ok ? response.json() : (() => { throw Error(response.statusText) })();
         })
