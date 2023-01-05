@@ -53,4 +53,9 @@ ul {
     border-radius: 1rem;
     position: fixed;
     backdrop-filter: invert();
+    pointer-events: none;
+}
+
+.nationality {
+    font-family: "Noto Color Emoji";
 }
