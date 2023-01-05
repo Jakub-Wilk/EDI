@@ -18,26 +18,39 @@ const create_data_showcase = data => {
         const add_node = (name, parent, data_source, set_text=true) => {
             const new_node = document.createElement("div");
             parent.appendChild(new_node);
-            new_node.classList.add(name);
-            new_node.textContent = set_text ? data_source[name] : '';
+            new_node.classList.add(name.replace("_", "-"));
+            new_node.textContent = set_text ? `${name.replace('_', ' ')}: ${data_source[name]}` : '';
             return new_node;
         }
 
-        const data_parent = add_node("data-point", data_container, false);
+        const data_parent = add_node("data-point", data_container, null, false);
+        const identity_container = add_node("identity-container", data_parent, null, false)
 
-        const add_data_node = (name, set_text=true) => { return add_node(name, data_parent, data_point, set_text) }
+        const add_identity_node = (name, set_text=true) => { return add_node(name, identity_container, data_point, set_text) }
 
-        add_data_node("username");
-        add_data_node("email");
-        add_data_node("age");
+        add_identity_node("username");
+        add_identity_node("email");
+        add_identity_node("age");
 
-        const nationality = add_data_node("nationality", false);
-        nationality.textContent = country_code_to_emoji(data_point["nationality"]);
+        const nationality = add_identity_node("nationality", false);
+        nationality.innerHTML = `
+            <span class='nationality-label'>
+                nationality:
+            </span>
+            <span class='nationality-flag'>
+                ${country_code_to_emoji(data_point["nationality"])}
+            </span>
+            `;
 
-        const website_visits = add_data_node("website_visits", false);
+        const website_visits_container = add_node("website-visits-container", data_parent, null, false)
+
+        const website_visits_label = add_node("website-visits-label", website_visits_container, null, false);
+        website_visits_label.textContent = "website visits: "
+
+        const website_visits = add_node("website_visits", website_visits_container, null, false);
 
         for (const website_visit of data_point["website_visits"]) {
-            const website_visit_node = add_node("website-visit", website_visits, false);
+            const website_visit_node = add_node("website-visit", website_visits, null, false);
 
             const add_visit_node = (name, set_text=true) => { return add_node(name, website_visit_node, website_visit, set_text) }
             
