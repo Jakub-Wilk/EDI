@@ -7,8 +7,8 @@ const country_code_to_emoji = country_code => {
         // Flag emojis are just country codes, but written using special unicode region characters
         // 127462 is the code point for 'A' in the unicode region characters
         // we subtract 65 because 65 is 'A' as a regular letter, and we need it to be 0th character
-        .map(char => 127462 + char.charCodeAt() - 65)
-    return String.fromCodePoint(...code_points)
+        .map(char => 127462 + char.charCodeAt() - 65);
+    return String.fromCodePoint(...code_points);
 }
 
 const create_data_showcase = data => {
@@ -65,7 +65,8 @@ const create_data_showcase = data => {
 }
 
 const fetch_data = () => {
-    fetch('https://my.api.mockaroo.com/website_entries.json?key=7d9d28a0')
+    // fetch('https://my.api.mockaroo.com/website_entries.json?key=7d9d28a0')
+    fetch('/website_entries.json')
         .then(response => {
             return response.ok ? response.json() : (() => { throw Error(response.statusText) })();
         })
