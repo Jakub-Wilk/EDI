@@ -11,9 +11,9 @@ const country_code_to_emoji = country_code => {
     return String.fromCodePoint(...code_points);
 }
 
-const create_data_showcase = data => {
+const create_data_showcase = user_data => {
     const data_container = document.querySelector("#data-container");
-    for (const data_point of data) {
+    for (const user of user_data) {
 
         const add_node = (name, parent, data_source, set_text=true) => {
             const new_node = document.createElement("div");
@@ -26,7 +26,7 @@ const create_data_showcase = data => {
         const data_parent = add_node("data-point", data_container, null, false);
         const identity_container = add_node("identity-container", data_parent, null, false)
 
-        const add_identity_node = (name, set_text=true) => { return add_node(name, identity_container, data_point, set_text) }
+        const add_identity_node = (name, set_text=true) => { return add_node(name, identity_container, user, set_text) }
 
         add_identity_node("username");
         add_identity_node("email");
@@ -38,7 +38,7 @@ const create_data_showcase = data => {
                 nationality:
             </span>
             <span class='nationality-flag'>
-                ${country_code_to_emoji(data_point["nationality"])}
+                ${country_code_to_emoji(user.nationality)}
             </span>
             `;
 
@@ -49,7 +49,7 @@ const create_data_showcase = data => {
 
         const website_visits = add_node("website_visits", website_visits_container, null, false);
 
-        for (const website_visit of data_point["website_visits"]) {
+        for (const website_visit of user.website_visits) {
             const website_visit_node = add_node("website-visit", website_visits, null, false);
 
             const add_visit_node = (name, set_text=true) => { return add_node(name, website_visit_node, website_visit, set_text) }
@@ -63,79 +63,68 @@ const create_data_showcase = data => {
         }
     }
 }
-const create_chart_1 = data => {
-    let age = [];
-    for(let i = 0; i < data.length; i++){
-       age.push(data[i]['age']); 
-    }
-    
-    let sum_age = []
-    for(let i = 0; i < 100; i++){
-        sum_age.push(0);
-    }
 
-    for(let i = 0; i < 100; i++){
-        sum_age[age[i]] = sum_age[age[i]] + 1;
+const create_chart_1 = user_data => {
+
+    const ages = user_data.map(user => user.age);
+    
+    let sums_of_ages = new Array(100).fill(0);
+
+    for (const age of ages){
+        sums_of_ages[age]++;
     }
     
-    let axis = [];
-    for(let i = 0; i < 80; i++){
-        axis.push(i);
-    }
+    const x_axis = [...Array(80).keys()];
    
     const chart1 = document.querySelector('#chart1');
     
     new Chart(chart1, {
-        type: 'bar',
+        type: "bar",
         data: {
-          labels: axis,
+          labels: x_axis,
           datasets: [{
-            label: 'Number of users in this age',
-            data: sum_age,
-            borderWidth: 1
+            label: " Number of users of this age",
+            data: sums_of_ages,
+            borderWidth: 1,
+            backgroundColor: "#003F5C"
           }]
         },
-        options: {
-          plugins:{
-            title: {
-                display: true,
-                text: 'Number of users in certain age'
-            }
-          }
+        options: {  
+            responsive: true,
+            maintainAspectRatio: false
         }
       });
 
 }
-const create_chart_2 = data => {
-    let visits = [0,0,0,0,0];
-    for(let i = 0; i < data.length; i++){
-       let number_of_v = data[i]["website_visits"].length;
-       visits[number_of_v-1]++;
+
+const create_chart_2 = user_data => {
+    let visits = new Array(5).fill(0);
+
+    for (const user of user_data){
+       const number_of_visits = user.website_visits.length;
+       visits[number_of_visits - 1]++;
     }
 
     const chart2 = document.querySelector('#chart2');
 
     new Chart(chart2, {
-        type: "pie",
+        type: "doughnut",
         data: {
-            labels: ["1 visit","2 visits","3 visits","4 visits","5 visit"],
+            labels: ["1 visit", "2 visits", "3 visits", "4 visits", "5 visits"],
             datasets: [{
-                label: "Number of people who visited this many times",
-                backgroundColor: ["#75F4F4","#90E0F3","#B8B3E9","#D999B9","#D17B88"],
+                label: " Number of people who visited this many times",
+                backgroundColor: ["#003F5C","#58508D","#BC5090","#FF6361","#FFA600"],
                 data: visits
             }]
         },
-        options: {
-            plugins: {
-                title: {
-                    display: true,
-                    text: 'Number of visits'
-                }
-            }
+        options: {  
+            responsive: true,
+            maintainAspectRatio: false
         },
         hoverOffset: 4,
         });
 }
+
 const fetch_data = () => {
     //fetch('https://my.api.mockaroo.com/website_entries.json?key=7d9d28a0')
     fetch('website_entries.json')
@@ -143,14 +132,14 @@ const fetch_data = () => {
             return response.ok ? response.json() : (() => { throw Error(response.statusText) })();
         })
 
-        .then(data => {
-            create_data_showcase(data);
-            create_chart_1(data);
-            create_chart_2(data);
+        .then(user_data => {
+            create_data_showcase(user_data);
+            create_chart_1(user_data);
+            create_chart_2(user_data);
         })
 
         .catch(error => {
-            console.log("fetch error");
+            console.log("fetch error", error);
         })
 }
 
