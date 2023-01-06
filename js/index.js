@@ -169,7 +169,7 @@ document.querySelector("body").onload = () => {
     })
 
     .catch(error => {
-        console.log("fetch error", error);
+        console.error("Fetch error\n", error);
     })
 
     // cursor handling
