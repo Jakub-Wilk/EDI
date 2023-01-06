@@ -125,31 +125,31 @@ const create_chart_2 = user_data => {
         });
 }
 
-const fetch_data = () => {
-    //fetch('https://my.api.mockaroo.com/website_entries.json?key=7d9d28a0')
-    fetch('website_entries.json')
-        .then(response => {
-            return response.ok ? response.json() : (() => { throw Error(response.statusText) })();
-        })
+const user_data = fetch('website_entries.json') //fetch('https://my.api.mockaroo.com/website_entries.json?key=7d9d28a0')
 
-        .then(user_data => {
-            create_data_showcase(user_data);
-            create_chart_1(user_data);
-            create_chart_2(user_data);
-        })
+document.querySelector("body").onload = () => {
+    user_data
+    .then(response => {
+        return response.ok ? response.json() : (() => { throw Error(response.statusText) })();
+    })
 
-        .catch(error => {
-            console.log("fetch error", error);
-        })
-}
+    .then(user_data => {
+        create_data_showcase(user_data);
+        create_chart_1(user_data);
+        create_chart_2(user_data);
+    })
 
-document.querySelector("body").onload = fetch_data;
+    .catch(error => {
+        console.log("fetch error", error);
+    })
 
-let cursor = document.querySelector("#cursor")
-document.querySelector("body").onmousemove = (e) => {
-    // e.clientY is the Y position of the mouse cursor.
-    // cursor.offsetHeight is the height of the circular cursor in pixels
-    // half of it is subtracted from the Y position so the circular cursor is centered on the real cursor
-    cursor.style.top = `${e.clientY - cursor.offsetHeight / 2}px`;
-    cursor.style.left = `${e.clientX - cursor.offsetWidth / 2}px`;
+    let cursor = document.querySelector("#cursor")
+
+    document.querySelector("body").onmousemove = (e) => {
+        // e.clientY is the Y position of the mouse cursor.
+        // cursor.offsetHeight is the height of the circular cursor in pixels
+        // half of it is subtracted from the Y position so the circular cursor is centered on the real cursor
+        cursor.style.top = `${e.clientY - cursor.offsetHeight / 2}px`;
+        cursor.style.left = `${e.clientX - cursor.offsetWidth / 2}px`;
+    }
 }
