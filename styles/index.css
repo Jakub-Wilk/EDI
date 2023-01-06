@@ -2,6 +2,11 @@
     cursor: none;
 }
 
+*::selection {
+    background-color: var(--dark-blue);
+    color: var(--off-white)
+}
+
 :root {
     --dark-blue: #060911;
     --off-white: #f5f6fa;
@@ -59,6 +64,7 @@ ul {
     position: fixed;
     backdrop-filter: invert();
     pointer-events: none;
+    z-index: 2;
 }
 
 #data-container {
@@ -95,6 +101,8 @@ ul {
 
 .nationality-flag {
     font-family: "Noto Color Emoji";
+    z-index: 3;
+    position: relative;
 }
 
 .website-visits-container {
