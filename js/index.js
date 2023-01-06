@@ -1,57 +1,80 @@
 'use strict';
 
 const country_code_to_emoji = country_code => {
+    // This function converts a country code in ASCII to a country code using unicode region characters,
+    // which allows is to be displayed as an emoji if the font supports it
+
     const code_points = country_code
         .toUpperCase()
         .split('')
-        // Flag emojis are just country codes, but written using special unicode region characters
         // 127462 is the code point for 'A' in the unicode region characters
-        // we subtract 65 because 65 is 'A' as a regular letter, and we need it to be 0th character
+        // we subtract 65 because 65 is 'A' in ASCII, and we need it to be 0th character
         .map(char => 127462 + char.charCodeAt() - 65);
     return String.fromCodePoint(...code_points);
 }
 
+const capitalized = string => {
+    // this function makes the first letter of a string capitalized
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 const create_data_showcase = user_data => {
+    // This function creates the DOM structure for the Data Showcase
+
     const data_container = document.querySelector("#data-container");
     for (const user of user_data) {
 
         const add_node = (name, parent, data_source, set_text=true) => {
+            // This is a helper function that creates a DOM node
+            // name: will be used as a class name, and if set_text is true, as the key to retrieve data
+            // parent: the parent node that this node will be attached to
+            // data_source: the object that data will be retrieved from if set_text is true
+            // set_text: a flag indicating if the node should have text set, or not
+
             const new_node = document.createElement("div");
             parent.appendChild(new_node);
-            new_node.classList.add(name.replace("_", "-"));
-            new_node.textContent = set_text ? `${name.replace('_', ' ')}: ${data_source[name]}` : '';
-            return new_node;
+            new_node.classList.add(name.replace("_", "-")); // class names should have dashes in place of underscores
+            new_node.textContent = set_text ? `${capitalized(name).replace('_', ' ')}: ${data_source[name]}` : ''; // text inside of the node should have spaces in place of underscores
+            return new_node; // return a reference to the node in case it needs further modification
         }
 
+        // create a node that will hold all of the data inside of it
         const data_parent = add_node("data-point", data_container, null, false);
+        // create a container for the identity data (everything except website visits)
         const identity_container = add_node("identity-container", data_parent, null, false)
 
+        // helper function to make creating new nodes inside of the identity container shorter
         const add_identity_node = (name, set_text=true) => { return add_node(name, identity_container, user, set_text) }
 
         add_identity_node("username");
         add_identity_node("email");
         add_identity_node("age");
 
+        // the nationality node will need special treatment so we need a reference to it so we can set the text manually
         const nationality = add_identity_node("nationality", false);
+        // two spans are created so that the region code can have a separate font set
+        // - this is done because Windows doesn't support rendering flag emojis by default
         nationality.innerHTML = `
             <span class='nationality-label'>
-                nationality:
+                Nationality:
             </span>
             <span class='nationality-flag'>
                 ${country_code_to_emoji(user.nationality)}
             </span>
             `;
 
+        
         const website_visits_container = add_node("website-visits-container", data_parent, null, false)
 
         const website_visits_label = add_node("website-visits-label", website_visits_container, null, false);
-        website_visits_label.textContent = "website visits: "
+        website_visits_label.textContent = "Website visits: "
 
         const website_visits = add_node("website_visits", website_visits_container, null, false);
 
         for (const website_visit of user.website_visits) {
             const website_visit_node = add_node("website-visit", website_visits, null, false);
 
+            // similar to before, we create a helper function to make creating nodes easier
             const add_visit_node = (name, set_text=true) => { return add_node(name, website_visit_node, website_visit, set_text) }
             
             add_visit_node("id");
@@ -66,14 +89,18 @@ const create_data_showcase = user_data => {
 
 const create_chart_1 = user_data => {
 
+    // extract ages out of every user
     const ages = user_data.map(user => user.age);
     
+    // create a 100-length array filled with zeroes
     let sums_of_ages = new Array(100).fill(0);
 
+    // increase the number with the index of each age, thus creating sums of every age
     for (const age of ages){
         sums_of_ages[age]++;
     }
     
+    // create an 80-length array filled with numbers 0-79; equivalent to `x_axis = list(range(80))` in Python
     const x_axis = [...Array(80).keys()];
    
     const chart1 = document.querySelector('#chart1');
@@ -101,8 +128,8 @@ const create_chart_2 = user_data => {
     let visits = new Array(5).fill(0);
 
     for (const user of user_data){
-       const number_of_visits = user.website_visits.length;
-       visits[number_of_visits - 1]++;
+        const number_of_visits = user.website_visits.length;
+        visits[number_of_visits - 1]++;
     }
 
     const chart2 = document.querySelector('#chart2');
@@ -125,9 +152,11 @@ const create_chart_2 = user_data => {
         });
 }
 
+// this is global, because the fetch should start immediately when the script loads
 const user_data = fetch('website_entries.json') //fetch('https://my.api.mockaroo.com/website_entries.json?key=7d9d28a0')
 
 document.querySelector("body").onload = () => {
+    // processing of the fetched data should only start after the whole body is loaded, because we need all DOM elements to be present
     user_data
     .then(response => {
         return response.ok ? response.json() : (() => { throw Error(response.statusText) })();
@@ -143,8 +172,8 @@ document.querySelector("body").onload = () => {
         console.log("fetch error", error);
     })
 
+    // cursor handling
     let cursor = document.querySelector("#cursor")
-
     document.querySelector("body").onmousemove = (e) => {
         // e.clientY is the Y position of the mouse cursor.
         // cursor.offsetHeight is the height of the circular cursor in pixels

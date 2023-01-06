@@ -75,10 +75,6 @@ ul {
     gap: 1rem;
 }
 
-#data-container *::first-letter {
-    text-transform: capitalize;
-}
-
 .data-point, .website-visits, .website-visit {
     border: 1px solid var(--dark-blue);
 }
