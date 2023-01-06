@@ -64,7 +64,6 @@ ul {
     position: fixed;
     backdrop-filter: invert();
     pointer-events: none;
-    z-index: 2;
 }
 
 #data-container {
@@ -101,8 +100,6 @@ ul {
 
 .nationality-flag {
     font-family: "Noto Color Emoji";
-    z-index: 3;
-    position: relative;
 }
 
 .website-visits-container {
@@ -127,7 +124,23 @@ ul {
 .website-visit {
     padding: 1rem;
 }
-.chart{
-    margin-top: 10px;
-    margin-bottom: 20px;
+
+#chart-container {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.chart-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 30rem;
+}
+
+h2 {
+    font-size: 1.5rem;
 }
