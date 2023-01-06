@@ -63,9 +63,77 @@ const create_data_showcase = data => {
         }
     }
 }
+const data_for_chart1 = data => {
+    let age = []
+    let sum_age = []
+    for(let i=0;i<data.length;i++ ){
+       age.push(data[i]['age']); 
+    }
+    for(let i=0;i<100;i++ ){
+        sum_age.push(0);
+     }
+    for(let i=0;i<100;i++ ){
+        sum_age[age[i]] = sum_age[age[i]]+1;
+    }
+    
+    let axis = [];
+    for(let i=0;i<80;i++ ){
+        axis.push(i)
+    }
+   
+    var chart1 = document.querySelector('#chart1');
+    
+    new Chart(chart1, {
+        type: 'bar',
+        data: {
+          labels: axis,
+          datasets: [{
+            label: 'Number of users in this age',
+            data: sum_age,
+            borderWidth: 1
+          }]
+        },
+        options: {
+          plugins:{
+            title: {
+                display: true,
+                text: 'Number of users in certain age'
+            }
+          }
+        }
+      });
 
+}
+const data_for_chart2 = data => {
+    let vistis = [0,0,0,0,0]
+    for(let i=0;i<data.length;i++ ){
+       let number_of_v = data[i]["website_visits"].length
+       vistis[number_of_v-1]++;
+    }
+    var chart2 = document.querySelector('#chart2');
+    new Chart(chart2, {
+        type: "pie",
+        data: {
+            labels: ["1 visit","2 visits","3 visits","4 visits","5 visit"],
+            datasets: [{
+                label:"Number of people who visited this many times",
+                backgroundColor:["#75F4F4","#90E0F3","#B8B3E9","#D999B9","#D17B88"],
+                data: vistis
+            }]
+        },
+        options: {
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Number of visits'
+                }
+            }
+        },
+        hoverOffset: 4,
+        });
+}
 const fetch_data = () => {
-    // fetch('https://my.api.mockaroo.com/website_entries.json?key=7d9d28a0')
+    //fetch('https://my.api.mockaroo.com/website_entries.json?key=7d9d28a0')
     fetch('website_entries.json')
         .then(response => {
             return response.ok ? response.json() : (() => { throw Error(response.statusText) })();
@@ -73,6 +141,8 @@ const fetch_data = () => {
 
         .then(data => {
             create_data_showcase(data)
+            data_for_chart1(data)
+            data_for_chart2(data)
         })
 
         .catch(error => {
