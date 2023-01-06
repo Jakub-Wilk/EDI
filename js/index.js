@@ -105,10 +105,10 @@ const data_for_chart1 = data => {
 
 }
 const data_for_chart2 = data => {
-    let vistis = [0,0,0,0,0]
+    let visits = [0,0,0,0,0]
     for(let i=0;i<data.length;i++ ){
        let number_of_v = data[i]["website_visits"].length
-       vistis[number_of_v-1]++;
+       visits[number_of_v-1]++;
     }
     var chart2 = document.querySelector('#chart2');
     new Chart(chart2, {
@@ -118,7 +118,7 @@ const data_for_chart2 = data => {
             datasets: [{
                 label:"Number of people who visited this many times",
                 backgroundColor:["#75F4F4","#90E0F3","#B8B3E9","#D999B9","#D17B88"],
-                data: vistis
+                data: visits
             }]
         },
         options: {
