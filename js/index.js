@@ -87,6 +87,14 @@ const create_data_showcase = user_data => {
     }
 }
 
+const hide_loading = () => {
+    const loadings = document.querySelectorAll(".loading");
+    for (const loading of loadings) {
+        loading.style.display = "none";
+    }
+    document.querySelector("#chart-container").style.display = "flex"
+}
+
 const create_chart_1 = user_data => {
 
     // extract ages out of every user
@@ -217,6 +225,7 @@ document.querySelector("body").onload = () => {
     })
 
     .then(user_data => {
+        hide_loading();
         create_data_showcase(user_data);
         create_chart_1(user_data);
         create_chart_2(user_data);

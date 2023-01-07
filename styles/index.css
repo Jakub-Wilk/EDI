@@ -3,13 +3,15 @@
 }
 
 *::selection {
-    background-color: var(--dark-blue);
-    color: var(--off-white)
+    background-color: var(--blue);
+    color: var(--white)
 }
 
 :root {
-    --dark-blue: #060911;
-    --off-white: #f5f6fa;
+    --blue: #003F5C;
+    --purple: #58508D;
+    --pink: #BC5090;
+    --white: #F5F6FA;
 }
 
 html {
@@ -17,7 +19,9 @@ html {
 }
 
 body {
-    background-color: var(--dark-blue);
+    background: repeating-linear-gradient(197deg, var(--blue) 0, var(--blue) 5rem, var(--purple) 5rem, var(--purple) 10rem, var(--pink) 10rem, var(--pink) 15rem);
+    padding-top: 2rem;
+    margin: 0;
 }
 
 #container {
@@ -28,7 +32,7 @@ body {
 
 section {
     border-radius: 0.5rem;
-    background-color: var(--off-white);
+    background-color: var(--white);
     font-family: "Ubuntu", sans-serif;
     font-size: 1.5rem;
     display: flex;
@@ -38,13 +42,38 @@ section {
     margin: 2rem;
 }
 
+.team-wrapper {
+    width: 70%;
+    height: 70%;
+    background: repeating-linear-gradient(197deg, var(--blue) 0, var(--blue) 1rem, var(--purple) 1rem, var(--purple) 2rem, var(--pink) 2rem, var(--pink) 3rem);
+}
+
+.team-container {
+    width: calc(100% - 4rem);
+    height: calc(100% - 2rem);
+    background: var(--white);
+    margin: 1rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 ul {
     list-style: none;
+    margin: 0;
+    padding: 0;
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
 }
 
 #info li {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    transition: gap 0.2s ease-in-out;
 }
 
 #info li::before {
@@ -52,9 +81,28 @@ ul {
     display: inline-block;
     width: 1rem;
     height: 1rem;
-    background-color: black;
-    margin-right: 0.5rem;
     clip-path: polygon(100% 50%, 0 0, 0 100%);
+    transition: margin 0.2s ease-in-out;
+}
+
+#info li:hover {
+    gap: 0.25rem;
+}
+
+#info li:hover::before {
+    margin-left: 0.25rem;
+}
+
+#info li:nth-child(1)::before {
+    background-color: var(--blue);
+}
+
+#info li:nth-child(2)::before {
+    background-color: var(--purple);
+}
+
+#info li:nth-child(3)::before {
+    background-color: var(--pink);
 }
 
 #cursor {
@@ -62,8 +110,8 @@ ul {
     height: 2rem;
     border-radius: 1rem;
     position: fixed;
-    backdrop-filter: invert();
     pointer-events: none;
+    background: repeating-linear-gradient(146deg, var(--blue) 0, var(--blue) 1rem, var(--purple) 1rem, var(--purple) 2rem, var(--pink) 2rem, var(--pink) 3rem);
 }
 
 #data-container {
@@ -76,7 +124,7 @@ ul {
 }
 
 .data-point, .website-visits, .website-visit {
-    border: 1px solid var(--dark-blue);
+    border: 1px solid var(--blue);
 }
 
 .data-point {
@@ -84,6 +132,12 @@ ul {
     justify-content: space-between;
     height: 15rem;
     padding: 1rem;
+    background-color: var(--white);
+    transition: filter 0.2s ease-in-out;
+}
+
+.data-point:hover {
+    filter: brightness(1.2);
 }
 
 .identity-container {
@@ -108,6 +162,7 @@ ul {
 }
 
 .website-visits {
+    background: repeating-linear-gradient(197deg, var(--blue) 0, var(--blue) 1rem, var(--purple) 1rem, var(--purple) 2rem, var(--pink) 2rem, var(--pink) 3rem);
     max-height: 15rem;
     overflow-y: scroll;
     padding: 1rem;
@@ -119,11 +174,12 @@ ul {
 
 .website-visit {
     padding: 1rem;
+    background: var(--white);
 }
 
 #chart-container {
     width: 80%;
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
 }
@@ -139,4 +195,70 @@ ul {
 
 h2 {
     font-size: 1.5rem;
+    margin-top: 5rem;
+}
+
+.loading {
+    display: flex;
+    flex-direction: column;
+}
+
+.loading div {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.loading div div {
+    height: 3rem;
+    width: 1rem;
+}
+
+.loading div div:nth-child(1) {
+    background-color: var(--blue);
+    animation: loading-animation 2s ease 0s infinite normal forwards;
+}
+
+.loading div div:nth-child(2) {
+    background-color: var(--purple);
+    animation: loading-animation 2s ease 0.6s infinite normal forwards;
+}
+
+.loading div div:nth-child(3) {
+    background-color: var(--pink);
+    animation: loading-animation 2s ease 1.2s infinite normal forwards;
+}
+
+@keyframes loading-animation {
+	0% {
+		transform: scale3d(1, 1, 1);
+	}
+
+	15% {
+		transform: scale3d(1.25, 0.75, 1);
+	}
+
+	20% {
+		transform: scale3d(0.75, 1.25, 1);
+	}
+
+	25% {
+		transform: scale3d(1.15, 0.85, 1);
+	}
+
+	32.5% {
+		transform: scale3d(0.95, 1.05, 1);
+	}
+
+	37.5% {
+		transform: scale3d(1.05, 0.95, 1);
+	}
+
+	50% {
+		transform: scale3d(1, 1, 1);
+	}
+
+    100% {
+        transform: scale3d(1, 1, 1);
+    }
 }
