@@ -215,7 +215,7 @@ const create_chart_3 = user_data => {
 }
 
 // this is global, because the fetch should start immediately when the script loads
-const user_data = fetch('website_entries.json') //fetch('https://my.api.mockaroo.com/website_entries.json?key=7d9d28a0')
+const user_data = fetch('https://my.api.mockaroo.com/website_entries.json?key=7d9d28a0') // fetch('website_entries.json')
 
 document.querySelector("body").onload = () => {
     // processing of the fetched data should only start after the whole body is loaded, because we need all DOM elements to be present
