@@ -152,6 +152,60 @@ const create_chart_2 = user_data => {
         });
 }
 
+const create_chart_3 = user_data => {
+    // change the data to a list of dates of all website visits
+    // if the site was visited twice on a given date, the date will occur twice in the list
+    // the dates are also converted to ISO format to allow easy sorting
+    const website_visit_dates = user_data
+        .map(user => user.website_visits)
+        .map(website_visits => website_visits.map((visit => visit.entry_date)))
+        .reduce((accumulator, current) => accumulator.concat(current))
+        .map(date => date.split("/"))
+        .map(date => `${date[2]}-${date[1]}-${[date[0]]}`)
+    
+    // create a list of all unique dates occuring in the dataset, sorted
+    const dates_in_data = Array.from(new Set(website_visit_dates)).sort()
+
+    let dates_in_range = []
+
+    // we want to get all dates between the earliest and latest one in the dataset,
+    // because we also want to display dates which didn't have any visits attached, with a value of 0
+    let start_date = new Date(dates_in_data[0])
+    start_date.setHours(0,0,0,0)
+
+    let end_date = new Date(dates_in_data[dates_in_data.length - 1])
+    end_date.setHours(0,0,0,0)
+
+    // iterate over every date between the earliest and latest from the dataset
+    for (let i = start_date; i <= end_date; i.setDate(i.getDate() + 1)) {
+        // push the date, formatted to the ISO format, to the dates_in_range array
+        dates_in_range.push(`${i.getFullYear()}-${i.getMonth() + 1}-${i.getDate() < 10 ? '0' + i.getDate() : i.getDate()}`)
+    }
+
+    let data = {}
+    // go through all possible dates, and count how many times any given date showed up in the dataset
+    for (const date of dates_in_range) {
+        data[date] = website_visit_dates.filter(visit_date => visit_date == date).length
+    }
+
+    new Chart(chart3, {
+        type: "line",
+        data: {
+            datasets: [{
+                label: "Number of visits",
+                data: data,
+                fill: false,
+                tension: 0.5,
+                borderColor: "#003F5C"
+            }]
+        },
+        options: {  
+            responsive: true,
+            maintainAspectRatio: false
+        }
+        });
+}
+
 // this is global, because the fetch should start immediately when the script loads
 const user_data = fetch('website_entries.json') //fetch('https://my.api.mockaroo.com/website_entries.json?key=7d9d28a0')
 
@@ -166,6 +220,7 @@ document.querySelector("body").onload = () => {
         create_data_showcase(user_data);
         create_chart_1(user_data);
         create_chart_2(user_data);
+        create_chart_3(user_data);
     })
 
     .catch(error => {
