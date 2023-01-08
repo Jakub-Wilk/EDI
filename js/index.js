@@ -240,9 +240,8 @@ document.querySelector("body").onload = () => {
     // processing of the fetched data should only start after the whole body is loaded, because we need all DOM elements to be present
     user_data
     .then(response => {
-        return response.ok ? response.json() : (() => { throw Error(response.statusText) })();
+        return response.ok ? response.json() : (() => { throw Error(response.status) })();
     })
-
     .then(user_data => {
         hide_loading();
         create_data_showcase(user_data);
@@ -250,9 +249,19 @@ document.querySelector("body").onload = () => {
         create_chart_2(user_data);
         create_chart_3(user_data);
     })
-
     .catch(error => {
-        console.error("Fetch error\n", error);
+        if (error.message = "429") {
+            alert("Mockeroo API has reached its rate limit, data will have to be loaded from a backup file");
+            fetch('website_entries.json')
+                .then(response => response.json())
+                .then(user_data => {
+                    hide_loading();
+                    create_data_showcase(user_data);
+                    create_chart_1(user_data);
+                    create_chart_2(user_data);
+                    create_chart_3(user_data);
+                })
+        }
     })
 
     // cursor handling
