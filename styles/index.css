@@ -49,7 +49,7 @@ section {
 }
 
 .team-container {
-    width: calc(100% - 4rem);
+    width: calc(100% - 2rem);
     height: calc(100% - 2rem);
     background: var(--white);
     margin: 1rem;
@@ -123,58 +123,8 @@ ul {
     gap: 1rem;
 }
 
-.data-point, .website-visits, .website-visit {
-    border: 1px solid var(--blue);
-}
-
-.data-point {
-    display: flex;
-    justify-content: space-between;
-    height: 15rem;
-    padding: 1rem;
-    background-color: var(--white);
-    transition: filter 0.2s ease-in-out;
-}
-
-.data-point:hover {
-    filter: brightness(1.2);
-}
-
-.identity-container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    justify-content: space-evenly;
-    width: 30%;
-}
-
-.nationality-flag {
-    font-family: "Noto Color Emoji";
-}
-
-.website-visits-container {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 2rem;
-    height: 100%;
-    width: 70%;
-}
-
 .website-visits {
     background: repeating-linear-gradient(197deg, var(--blue) 0, var(--blue) 1rem, var(--purple) 1rem, var(--purple) 2rem, var(--pink) 2rem, var(--pink) 3rem);
-    max-height: 15rem;
-    overflow-y: scroll;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    width: 70%;
-}
-
-.website-visit {
-    padding: 1rem;
-    background: var(--white);
 }
 
 #chart-container {

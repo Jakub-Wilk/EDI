@@ -1,5 +1,19 @@
 'use strict';
 
+tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          "website-blue": "#003F5C",
+          "website-white": "#F5F6FA"
+        },
+        fontFamily: {
+            "flag": ["Noto Color Emoji"]
+        }
+      }
+    }
+  }
+
 const country_code_to_emoji = country_code => {
     // This function converts a country code in ASCII to a country code using unicode region characters,
     // which allows is to be displayed as an emoji if the font supports it
@@ -24,7 +38,7 @@ const create_data_showcase = user_data => {
     const data_container = document.querySelector("#data-container");
     for (const user of user_data) {
 
-        const add_node = (name, parent, data_source, set_text=true) => {
+        const add_node = (name, parent, data_source, set_text=true, styles="") => {
             // This is a helper function that creates a DOM node
             // name: will be used as a class name, and if set_text is true, as the key to retrieve data
             // parent: the parent node that this node will be attached to
@@ -34,14 +48,19 @@ const create_data_showcase = user_data => {
             const new_node = document.createElement("div");
             parent.appendChild(new_node);
             new_node.classList.add(name.replace("_", "-")); // class names should have dashes in place of underscores
+            if (styles != "") {
+                for (const style of styles.split(" ")) { // adding tailwind styles
+                    new_node.classList.add(style)
+                }
+            }
             new_node.textContent = set_text ? `${capitalized(name).replace('_', ' ')}: ${data_source[name]}` : ''; // text inside of the node should have spaces in place of underscores
             return new_node; // return a reference to the node in case it needs further modification
         }
 
         // create a node that will hold all of the data inside of it
-        const data_parent = add_node("data-point", data_container, null, false);
+        const data_parent = add_node("data-point", data_container, null, false, "border border-website-blue flex justify-between h-60 p-4 bg-website-white transition duration-200 ease-in-out hover:brightness-125");
         // create a container for the identity data (everything except website visits)
-        const identity_container = add_node("identity-container", data_parent, null, false)
+        const identity_container = add_node("identity-container", data_parent, null, false, "flex flex-col h-full justify-evenly w-[30%]")
 
         // helper function to make creating new nodes inside of the identity container shorter
         const add_identity_node = (name, set_text=true) => { return add_node(name, identity_container, user, set_text) }
@@ -58,21 +77,21 @@ const create_data_showcase = user_data => {
             <span class='nationality-label'>
                 Nationality:
             </span>
-            <span class='nationality-flag'>
+            <span class='nationality-flag font-flag'>
                 ${country_code_to_emoji(user.nationality)}
             </span>
             `;
 
         
-        const website_visits_container = add_node("website-visits-container", data_parent, null, false)
+        const website_visits_container = add_node("website-visits-container", data_parent, null, false, "flex items-center justify-end gap-8 w-[70%]")
 
         const website_visits_label = add_node("website-visits-label", website_visits_container, null, false);
         website_visits_label.textContent = "Website visits: "
 
-        const website_visits = add_node("website_visits", website_visits_container, null, false);
+        const website_visits = add_node("website_visits", website_visits_container, null, false, "max-h-60 overflow-y-scroll p-4 flex flex-col gap-2 w-[70%]");
 
         for (const website_visit of user.website_visits) {
-            const website_visit_node = add_node("website-visit", website_visits, null, false);
+            const website_visit_node = add_node("website-visit", website_visits, null, false, "p-4 bg-website-white");
 
             // similar to before, we create a helper function to make creating nodes easier
             const add_visit_node = (name, set_text=true) => { return add_node(name, website_visit_node, website_visit, set_text) }
@@ -215,7 +234,7 @@ const create_chart_3 = user_data => {
 }
 
 // this is global, because the fetch should start immediately when the script loads
-const user_data = fetch('https://my.api.mockaroo.com/website_entries.json?key=7d9d28a0') // fetch('website_entries.json')
+const user_data = fetch('https://my.api.mockaroo.com/website_entries.json?key=7d9d28a0');
 
 document.querySelector("body").onload = () => {
     // processing of the fetched data should only start after the whole body is loaded, because we need all DOM elements to be present
