@@ -32,11 +32,11 @@ const capitalized = string => {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-const create_data_showcase = user_data => {
+const create_data_showcase = (dataset_number, datasets) => {
     // This function creates the DOM structure for the Data Showcase
 
-    const data_container = document.querySelector("#data-container");
-    for (const user of user_data) {
+    const data_container = document.querySelector(`#data-container-${dataset_number}`);
+    for (const user of datasets[dataset_number]) {
 
         const add_node = (name, parent, data_source, set_text=true, styles="") => {
             // This is a helper function that creates a DOM node
@@ -132,7 +132,7 @@ const create_chart_1 = user_data => {
    
     const chart1 = document.querySelector('#chart1');
     
-    new Chart(chart1, {
+    return new Chart(chart1, {
         type: "bar",
         data: {
           labels: x_axis,
@@ -161,7 +161,7 @@ const create_chart_2 = user_data => {
 
     const chart2 = document.querySelector('#chart2');
 
-    new Chart(chart2, {
+    return new Chart(chart2, {
         type: "doughnut",
         data: {
             labels: ["1 visit", "2 visits", "3 visits", "4 visits", "5 visits"],
@@ -188,34 +188,34 @@ const create_chart_3 = user_data => {
         .map(website_visits => website_visits.map((visit => visit.entry_date)))
         .reduce((accumulator, current) => accumulator.concat(current))
         .map(date => date.split("/"))
-        .map(date => `${date[2]}-${date[1]}-${[date[0]]}`)
+        .map(date => `${date[2]}-${date[1]}-${[date[0]]}`);
     
     // create a list of all unique dates occuring in the dataset, sorted
-    const dates_in_data = Array.from(new Set(website_visit_dates)).sort()
+    const dates_in_data = Array.from(new Set(website_visit_dates)).sort();
 
-    let dates_in_range = []
+    let dates_in_range = [];
 
     // we want to get all dates between the earliest and latest one in the dataset,
     // because we also want to display dates which didn't have any visits attached, with a value of 0
-    let start_date = new Date(dates_in_data[0])
-    start_date.setHours(0,0,0,0)
+    let start_date = new Date(dates_in_data[0]);
+    start_date.setHours(0,0,0,0);
 
-    let end_date = new Date(dates_in_data[dates_in_data.length - 1])
-    end_date.setHours(0,0,0,0)
+    let end_date = new Date(dates_in_data[dates_in_data.length - 1]);
+    end_date.setHours(0,0,0,0);
 
     // iterate over every date between the earliest and latest from the dataset
     for (let i = start_date; i <= end_date; i.setDate(i.getDate() + 1)) {
         // push the date, formatted to the ISO format, to the dates_in_range array
-        dates_in_range.push(`${i.getFullYear()}-${i.getMonth() + 1}-${i.getDate() < 10 ? '0' + i.getDate() : i.getDate()}`)
+        dates_in_range.push(`${i.getFullYear()}-${i.getMonth() + 1}-${i.getDate() < 10 ? '0' + i.getDate() : i.getDate()}`);
     }
 
-    let data = {}
+    let data = {};
     // go through all possible dates, and count how many times any given date showed up in the dataset
     for (const date of dates_in_range) {
-        data[date] = website_visit_dates.filter(visit_date => visit_date == date).length
+        data[date] = website_visit_dates.filter(visit_date => visit_date == date).length;
     }
 
-    new Chart(chart3, {
+    return new Chart(chart3, {
         type: "line",
         data: {
             datasets: [{
@@ -234,35 +234,89 @@ const create_chart_3 = user_data => {
 }
 
 // this is global, because the fetch should start immediately when the script loads
-const user_data = fetch('https://my.api.mockaroo.com/website_entries.json?key=7d9d28a0');
+const datasets = [fetch('data/website_entries_1.json'), fetch('data/website_entries_2.json'), fetch('data/website_entries_3.json')];
 
 document.querySelector("body").onload = () => {
     // processing of the fetched data should only start after the whole body is loaded, because we need all DOM elements to be present
-    user_data
-    .then(response => {
-        return response.ok ? response.json() : (() => { throw Error(response.status) })();
+    // wait for all of the datasets to load
+    Promise.all(datasets)
+    .then(responses => {
+        // convert HTTP responses to promises of JSON data
+        return responses.map(response => response.ok ? response.json() : (() => { throw Error(response.status) })());
     })
-    .then(user_data => {
-        hide_loading();
-        create_data_showcase(user_data);
-        create_chart_1(user_data);
-        create_chart_2(user_data);
-        create_chart_3(user_data);
+    .then(data_promises => {
+        // wait for all of the JSON data to load
+        Promise.all(data_promises)
+        .then(datasets => {
+            // this is needed because if we want to change the data, we need to have a reference to every chart
+            // so we can destroy it before rewriting the canvas
+            const set_up_data = (dataset_number, chart_references=[]) => {
+                if (chart_references) {
+                    chart_references.map(chart => chart.destroy());
+                }
+                const chart_1 = create_chart_1(datasets[dataset_number]);
+                const chart_2 = create_chart_2(datasets[dataset_number]);
+                const chart_3 = create_chart_3(datasets[dataset_number]);
+
+                // make every data container hidden
+                Array.from(document.querySelectorAll(".data-container")).map(data_container => data_container.style.display = "none");
+                // show the appropriate data container
+                document.querySelector(`#data-container-${dataset_number}`).style.display = "flex"
+
+                return [chart_1, chart_2, chart_3];
+            }
+            
+            // all three data showcases are created immediately, to not lag the website every time a data change is requested
+            create_data_showcase(0, datasets);
+            create_data_showcase(1, datasets);
+            create_data_showcase(2, datasets);
+
+            hide_loading();
+
+            let chart_references = set_up_data(0);
+
+            document.querySelector("#data-switch-0").classList.add("on");
+
+            document.querySelector("#data-switch-0").onclick = (e) => {
+                chart_references = set_up_data(0, chart_references);
+
+                // make every button off
+                Array.from(document.querySelectorAll(".data-switch")).map(button => button.classList.remove("on"))
+                // turn on the button that was clicked
+                e.target.classList.add("on")
+            }
+
+            document.querySelector("#data-switch-1").onclick = (e) => {
+                chart_references = set_up_data(1, chart_references);
+                Array.from(document.querySelectorAll(".data-switch")).map(button => button.classList.remove("on"))
+                e.target.classList.add("on")
+            }
+
+            document.querySelector("#data-switch-2").onclick = (e) => {
+                chart_references = set_up_data(2, chart_references);
+                Array.from(document.querySelectorAll(".data-switch")).map(button => button.classList.remove("on"))
+                e.target.classList.add("on")
+            }
+
+        })
     })
     .catch(error => {
-        if (error.message = "429") {
-            alert("Mockeroo API has reached its rate limit, data will have to be loaded from a backup file");
-            fetch('website_entries.json')
-                .then(response => response.json())
-                .then(user_data => {
-                    hide_loading();
-                    create_data_showcase(user_data);
-                    create_chart_1(user_data);
-                    create_chart_2(user_data);
-                    create_chart_3(user_data);
-                })
-        }
+        console.error("Something went wrong when fetching data", error);
     })
+    // .catch(error => {
+    //     if (error.message = "429") {
+    //         alert("Mockeroo API has reached its rate limit, data will have to be loaded from a backup file");
+    //         fetch('website_entries.json')
+    //             .then(response => response.json())
+    //             .then(user_data => {
+    //                 hide_loading();
+    //                 create_data_showcase(user_data);
+    //                 create_chart_1(user_data);
+    //                 create_chart_2(user_data);
+    //                 create_chart_3(user_data);
+    //             })
+    //     }
+    // })
 
     // cursor handling
     let cursor = document.querySelector("#cursor")
