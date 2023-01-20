@@ -32,11 +32,16 @@ const capitalized = string => {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-const create_data_showcase = (dataset_number, datasets) => {
+const destroy_data_showcase = () => {
+    const data_container = document.querySelector("#data-container");
+    data_container.innerHTML = "";
+}
+
+const create_data_showcase = user_data => {
     // This function creates the DOM structure for the Data Showcase
 
-    const data_container = document.querySelector(`#data-container-${dataset_number}`);
-    for (const user of datasets[dataset_number]) {
+    const data_container = document.querySelector(`#data-container`);
+    for (const user of user_data) {
 
         const add_node = (name, parent, data_source, set_text=true, styles="") => {
             // This is a helper function that creates a DOM node
@@ -111,7 +116,15 @@ const hide_loading = () => {
     for (const loading of loadings) {
         loading.style.display = "none";
     }
-    document.querySelector("#chart-container").style.display = "flex"
+    document.querySelector("#chart-container").style.display = "flex";
+}
+
+const show_loading = () => {
+    const loadings = document.querySelectorAll(".loading");
+    for (const loading of loadings) {
+        loading.style.display = "flex";
+    }
+    document.querySelector("#chart-container").style.display = "none";
 }
 
 const create_chart_1 = user_data => {
@@ -233,90 +246,73 @@ const create_chart_3 = user_data => {
         });
 }
 
-// this is global, because the fetch should start immediately when the script loads
-const datasets = [fetch('data/website_entries_1.json'), fetch('data/website_entries_2.json'), fetch('data/website_entries_3.json')];
+const set_up_data = (dataset_index, chart_references) => {
 
-document.querySelector("body").onload = () => {
-    // processing of the fetched data should only start after the whole body is loaded, because we need all DOM elements to be present
-    // wait for all of the datasets to load
-    Promise.all(datasets)
-    .then(responses => {
-        // convert HTTP responses to promises of JSON data
-        return responses.map(response => response.ok ? response.json() : (() => { throw Error(response.status) })());
+    destroy_data_showcase();
+    chart_references.map(chart => chart.destroy());
+
+    show_loading();
+    
+    const new_data = fetch(`data/website_entries_${dataset_index}.json`);
+    const new_references_promise = new_data // new_references_promise will be set to the value returned from the second .then()
+    .then(response => {
+        return response.ok ? response.json() : (() => { throw Error(response.status) })();
     })
-    .then(data_promises => {
-        // wait for all of the JSON data to load
-        Promise.all(data_promises)
-        .then(datasets => {
-            // this is needed because if we want to change the data, we need to have a reference to every chart
-            // so we can destroy it before rewriting the canvas
-            const set_up_data = (dataset_number, chart_references=[]) => {
-                if (chart_references) {
-                    chart_references.map(chart => chart.destroy());
-                }
-                const chart_1 = create_chart_1(datasets[dataset_number]);
-                const chart_2 = create_chart_2(datasets[dataset_number]);
-                const chart_3 = create_chart_3(datasets[dataset_number]);
+    .then(user_data => {
+        create_data_showcase(user_data);
 
-                // make every data container hidden
-                Array.from(document.querySelectorAll(".data-container")).map(data_container => data_container.style.display = "none");
-                // show the appropriate data container
-                document.querySelector(`#data-container-${dataset_number}`).style.display = "flex"
+        const chart_1 = create_chart_1(user_data);
+        const chart_2 = create_chart_2(user_data);
+        const chart_3 = create_chart_3(user_data);
 
-                return [chart_1, chart_2, chart_3];
-            }
-            
-            // all three data showcases are created immediately, to not lag the website every time a data change is requested
-            create_data_showcase(0, datasets);
-            create_data_showcase(1, datasets);
-            create_data_showcase(2, datasets);
+        hide_loading();
 
-            hide_loading();
-
-            let chart_references = set_up_data(0);
-
-            document.querySelector("#data-switch-0").classList.add("on");
-
-            document.querySelector("#data-switch-0").onclick = (e) => {
-                chart_references = set_up_data(0, chart_references);
-
-                // make every button off
-                Array.from(document.querySelectorAll(".data-switch")).map(button => button.classList.remove("on"))
-                // turn on the button that was clicked
-                e.target.classList.add("on")
-            }
-
-            document.querySelector("#data-switch-1").onclick = (e) => {
-                chart_references = set_up_data(1, chart_references);
-                Array.from(document.querySelectorAll(".data-switch")).map(button => button.classList.remove("on"))
-                e.target.classList.add("on")
-            }
-
-            document.querySelector("#data-switch-2").onclick = (e) => {
-                chart_references = set_up_data(2, chart_references);
-                Array.from(document.querySelectorAll(".data-switch")).map(button => button.classList.remove("on"))
-                e.target.classList.add("on")
-            }
-
-        })
+        return [chart_1, chart_2, chart_3]; // as this is inside a .then(), the returned value will be a promise
     })
     .catch(error => {
-        console.error("Something went wrong when fetching data", error);
+        console.error("Error loading data!", error);
     })
-    // .catch(error => {
-    //     if (error.message = "429") {
-    //         alert("Mockeroo API has reached its rate limit, data will have to be loaded from a backup file");
-    //         fetch('website_entries.json')
-    //             .then(response => response.json())
-    //             .then(user_data => {
-    //                 hide_loading();
-    //                 create_data_showcase(user_data);
-    //                 create_chart_1(user_data);
-    //                 create_chart_2(user_data);
-    //                 create_chart_3(user_data);
-    //             })
-    //     }
-    // })
+    return new_references_promise;
+}
+
+// this is global, because the fetch should start immediately when the script loads
+const initial_load = fetch("data/website_entries_1.json");
+
+document.querySelector("body").onload = () => {
+
+    initial_load
+    .then(response => {
+        return response.ok ? response.json() : (() => { throw Error(response.status) })()
+    })
+    .then(user_data => {
+        create_data_showcase(user_data);
+
+        const chart_1 = create_chart_1(user_data);
+        const chart_2 = create_chart_2(user_data);
+        const chart_3 = create_chart_3(user_data);
+
+        let chart_references = [chart_1, chart_2, chart_3];
+
+        hide_loading();
+
+        document.querySelector("#data-switch-1").classList.add("on")
+
+        document.querySelectorAll(".data-switch").forEach(data_switch => {
+
+            data_switch.onclick = event => {
+
+                document.querySelectorAll(".data-switch").forEach(data_switch => data_switch.classList.remove("on"));
+                event.target.classList.add("on")
+
+                // the first argument is the last char of the id of the clicked button - 1, 2, or 3
+                set_up_data(event.target.id[event.target.id.length - 1], chart_references)
+                // the returned value is a promise, so it needs to be resolved
+                .then(new_chart_references => {
+                    chart_references = new_chart_references;
+                })
+            }
+        })
+    })
 
     // cursor handling
     let cursor = document.querySelector("#cursor")
